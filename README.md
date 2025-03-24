@@ -42,7 +42,7 @@ O usuário interage com o bot enviando mensagens formatadas conforme demonstrado
 ```javascript
 Assunto: Adicionar compromisso
 Data: 30/06/2025
-Hora: 16:00h
+Hora: 16:00
 Descrição: Aniversário Raphaela
 ```
 
@@ -52,7 +52,7 @@ Descrição: Aniversário Raphaela
 Compromisso adicionado com sucesso! 
 ID: 12345 
 Data: 30/06/2025 
-Hora: 16:00h 
+Hora: 16:00
 Descrição: Aniversário Raphaela
 ```
 
@@ -71,11 +71,11 @@ Data: 30/06/2025
 ```javascript
 Compromissos no dia 30/06/2025: 
 ID: 12345 
-Hora: 16:00h 
+Hora: 16:00
 Descrição: Aniversário Raphaela
 
 ID: 67892 
-Hora: 10:00h 
+Hora: 10:00
 Descrição: Manutenção unhas de gel
 ```
 
@@ -87,7 +87,7 @@ Descrição: Manutenção unhas de gel
 ```javascript
 Assunto: Modificar compromisso 
 ID: 67892  
-Hora: 08:00h 
+Hora: 08:00
 ```
 
 **Resposta de sucesso:**
@@ -95,7 +95,7 @@ Hora: 08:00h
 ```javascript
 Compromisso modificado com sucesso! 
 ID: 67892 
-Hora: 08:00h 
+Hora: 08:00
 Descrição: Manutenção unhas de gel
 ```
 
