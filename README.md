@@ -44,6 +44,7 @@ Assunto: Adicionar compromisso
 Data: 30/06/2025
 Hora: 16:00
 Descrição: Aniversário Raphaela
+Local: Salão de festas Além da Alegria
 ```
 
 **Resposta de sucesso:**
@@ -54,6 +55,7 @@ ID: 12345
 Data: 30/06/2025 
 Hora: 16:00
 Descrição: Aniversário Raphaela
+Local: Salão de festas Além da Alegria
 ```
 
 
@@ -73,10 +75,12 @@ Compromissos no dia 30/06/2025:
 ID: 12345 
 Hora: 16:00
 Descrição: Aniversário Raphaela
+Local: Salão de festas Além da Alegria
 
 ID: 67892 
 Hora: 10:00
 Descrição: Manutenção unhas de gel
+Local: Salão CasemiroNails
 ```
 
 
@@ -97,6 +101,7 @@ Compromisso modificado com sucesso!
 ID: 67892 
 Hora: 08:00
 Descrição: Manutenção unhas de gel
+Local: Salão CasemiroNails
 ```
 
 
@@ -115,10 +120,10 @@ Compromisso deletado com sucesso!
 ID: 67892
 ```
 
-
 ## Modelagem de Dados
 
 ### Entidade `Compromisso`
+Esta entidade representa um compromisso que o usuário irá gerenciar (adicionar, listar, modificar, deletar).
 
 ```java
 @Entity
@@ -129,21 +134,25 @@ public class Compromisso {
     private Long id;
     
     @Column(nullable = false)
-    private LocalDate data;
+    private Strig data;
     
     @Column(nullable = false)
     private LocalTime hora;
     
     @Column(nullable = false)
     private String descricao;
+
+    @Column(nullable = false)
+    private String local;
     
-    @Column(nullable = false, unique = true)
-    private String idTelegram;
+    //@Column(nullable = false, unique = true)
+    //private String idTelegram;
     
     // Getters e Setters
 }
 
 ```
+### Atributos do Compromisso
 
 - id: Identificador único do compromisso no banco de dados.
 
@@ -153,6 +162,8 @@ public class Compromisso {
 
 - descricao: Descrição do compromisso (ex.: "Aniversário Raphaela").
 
+- local: Descrição do local do compromisso (ex.: Salão de festas Além da Alegria)
+
 - idTelegram: Identificador único gerado para o compromisso para integração com o Telegram.
 
 ```sql
@@ -161,6 +172,7 @@ CREATE TABLE compromisso (
     data DATE NOT NULL,
     hora TIME NOT NULL,
     descricao VARCHAR(255) NOT NULL,
+    local VARCHAR(255) NOT NULL,
     idTelegram VARCHAR(255) NOT NULL UNIQUE
 );
 ```
