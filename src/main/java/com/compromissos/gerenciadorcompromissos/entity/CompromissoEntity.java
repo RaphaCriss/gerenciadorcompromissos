@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "tb_compromissos")
-public class Compromisso {
+public class CompromissoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -37,11 +37,11 @@ public class Compromisso {
     @UpdateTimestamp
     private Instant updateTimestamp;
 
-    public Compromisso() {
+    public CompromissoEntity() {
 
     }
 
-    public Compromisso(UUID compromissoId, String data, String hora, String descricao, String local, Instant creationTimestamp, Instant updateTimestamp) {
+    public CompromissoEntity(UUID compromissoId, String data, String hora, String descricao, String local, Instant creationTimestamp, Instant updateTimestamp) {
         this.compromissoId = compromissoId;
         this.data = data;
         this.hora = hora;

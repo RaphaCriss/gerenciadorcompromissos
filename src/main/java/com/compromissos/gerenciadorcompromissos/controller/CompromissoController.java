@@ -1,6 +1,6 @@
 package com.compromissos.gerenciadorcompromissos.controller;
 
-import com.compromissos.gerenciadorcompromissos.entity.Compromisso;
+import com.compromissos.gerenciadorcompromissos.entity.CompromissoEntity;
 import com.compromissos.gerenciadorcompromissos.service.CompromissoService;
 import com.compromissos.gerenciadorcompromissos.utils.exceptions.CompromissoNaoEncontradoException;
 import org.springframework.http.HttpStatus;
@@ -19,14 +19,14 @@ public class CompromissoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Compromisso createCompromisso(@RequestBody CreateCompromissoDto createCompromissoDto) {
+    public CompromissoEntity createCompromisso(@RequestBody CreateCompromissoDto createCompromissoDto) {
         var compromissoSaved = compromissoService.createCompromisso(createCompromissoDto);
         return compromissoSaved;
     }
 
     @GetMapping("/{compromissoId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Compromisso> getCompromissoById(@PathVariable("compromissoId") String compromissoId) {
+    public ResponseEntity<CompromissoEntity> getCompromissoById(@PathVariable("compromissoId") String compromissoId) {
 
         var compromisso = compromissoService.getCompromissoById(compromissoId);
 
@@ -40,20 +40,20 @@ public class CompromissoController {
     }
 
     @GetMapping
-    public ResponseEntity<Compromisso> getTodosCompromissos(@PathVariable("compromissoId") String compromissoId) {
+    public ResponseEntity<CompromissoEntity> getTodosCompromissos(@PathVariable("compromissoId") String compromissoId) {
 
         //
         return null;
     }
 
     @GetMapping("/dia/{data}")
-    public ResponseEntity<Compromisso> getTodosCompromissosDia(@PathVariable("data") String data) {
+    public ResponseEntity<CompromissoEntity> getTodosCompromissosDia(@PathVariable("data") String data) {
         //
         return null;
     }
 
     @GetMapping("/mes/{data}")
-    public ResponseEntity<Compromisso> getTodosCompromissosMes(@PathVariable("data") String data) {
+    public ResponseEntity<CompromissoEntity> getTodosCompromissosMes(@PathVariable("data") String data) {
         //
         return null;
     }

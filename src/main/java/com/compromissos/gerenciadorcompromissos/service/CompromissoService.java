@@ -1,7 +1,7 @@
 package com.compromissos.gerenciadorcompromissos.service;
 
 import com.compromissos.gerenciadorcompromissos.controller.CreateCompromissoDto;
-import com.compromissos.gerenciadorcompromissos.entity.Compromisso;
+import com.compromissos.gerenciadorcompromissos.entity.CompromissoEntity;
 import com.compromissos.gerenciadorcompromissos.repository.CompromissoRepository;
 import com.compromissos.gerenciadorcompromissos.utils.exceptions.CompromissoJaExistenteException;
 import org.springframework.stereotype.Service;
@@ -21,10 +21,10 @@ public class CompromissoService {
     }
 
 
-    public Compromisso createCompromisso(CreateCompromissoDto createCompromissoDto) {
+    public CompromissoEntity createCompromisso(CreateCompromissoDto createCompromissoDto) {
 
         //DTO -> ENTITY
-        var entity = new Compromisso(
+        var entity = new CompromissoEntity(
                 UUID.randomUUID(),
                 createCompromissoDto.data(),
                 createCompromissoDto.hora(),
@@ -43,7 +43,7 @@ public class CompromissoService {
 
     }
 
-    public Optional<Compromisso> getCompromissoById(String compromissoId){
+    public Optional<CompromissoEntity> getCompromissoById(String compromissoId){
 
         return compromissoRepository.findById(UUID.fromString(compromissoId));
     }
