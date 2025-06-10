@@ -127,7 +127,7 @@ Esta entidade representa um compromisso que o usuário irá gerenciar (adicionar
 
 ```java
 @Entity
-public class Compromisso {
+public class CompromissoEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
