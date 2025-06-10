@@ -215,9 +215,15 @@ EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "gerenciador-compromissos.jar"]
 ```
 
-### 2. Criando o `docker-compose.yml`
+### 2. 📦 Documentação do Serviço MySQL no `docker-compose.yml`
 
 Para rodar a aplicação e o banco de dados MySQL de forma simples, você pode usar o Docker Compose. Crie um arquivo chamado `docker-compose.yml` na raiz do seu projeto com o seguinte conteúdo:
+
+O arquivo docker-compose.yml abaixo, define dois containers:
+
+- app: O container que executará sua aplicação Spring Boot.
+
+- db: O container que executará o banco de dados MySQL.
 
 ```java
 version: '3.8'
@@ -253,14 +259,52 @@ networks:
 
 
 ```
+###Descrição Geral
+Este serviço configura uma instância do MySQL utilizando a imagem oficial do Docker Hub. Ele define variáveis de ambiente, mapeamento de portas, e monta um volume com arquivos de configuração personalizados.
 
-Esse arquivo docker-compose.yml define dois containers:
+### ⚙️ Parâmetros do Serviço
+`image: mysql`
+Utiliza a imagem oficial do MySQL. A versão padrão será a mais recente, a menos que especificado (ex: `mysql:8.0`).
 
-- app: O container que executará sua aplicação Spring Boot.
 
-- db: O container que executará o banco de dados MySQL.
+🌐 `ports`
 
-### 3. Rodando o Docker
+| Porta no Host | Porta no Container | Descrição             |
+| ------------- | ------------------ | --------------------- |
+| 3306          | 3306               | Porta padrão do MySQL |
+
+
+🌱 `environment`
+
+| Variável              | Descrição                                             |
+| --------------------- | ----------------------------------------------------- |
+| `MYSQL_USER`          | Nome do usuário padrão que será criado (`springuser`) |
+| `MYSQL_PASSWORD`      | Senha para o usuário padrão (`ThePassword`)           |
+| `MYSQL_DATABASE`      | Nome do banco de dados a ser criado (`db_example`)    |
+| `MYSQL_ROOT_PASSWORD` | Senha do usuário root do MySQL (`root`)               |
+
+Monta um volume com arquivos de configuração personalizados do MySQL:
+
+📁 `volumes`
+``` yaml
+- "./conf.d:/etc/mysql/conf.d:ro"
+```
+- `./conf.d` é o diretório local onde você pode adicionar arquivos `.cnf` para configurar o MySQL.
+
+- Os arquivos são montados como somente leitura (`ro`).
+
+- Exemplo de uso: ajustar parâmetros como tamanho do buffer, charset padrão, etc.
+
+### ✅ Requisitos
+- Docker e Docker Compose instalados.
+
+- Diretório ./conf.d existente (pode estar vazio ou conter configurações .cnf válidas).
+
+- A porta 3306 disponível no host para não haver conflitos.
+
+- Define variáveis de ambiente necessárias para configurar o banco no momento da criação:
+
+### 3. ▶️ Rodando o Docker
 Para rodar a aplicação e o MySQL usando Docker Compose, execute os seguintes comandos:
 
 1- Construa as imagens:
@@ -276,6 +320,7 @@ docker-compose up
 Isso irá subir tanto a aplicação Spring Boot quanto o MySQL. O banco de dados MySQL estará acessível no container `db` e a aplicação Spring Boot estará disponível na porta `8080` da sua máquina local.
 
 ## Como Rodar o Projeto
+
 #### Pré-requisitos
 - Docker e Docker Compose instalados
 
@@ -304,14 +349,15 @@ Configure as variáveis de ambiente no `application.properties`:
 telegram.bot.token=SEU_TOKEN_AQUI
 telegram.bot.username=SEU_NOME_DE_USUARIO_AQUI
 ```
-#### 4- Compile o projeto:
+#### 3- Compile o projeto:
 
 ```java
 mvn clean install
 ```
 
-#### 5 - Execute o Docker Compose:
+#### 4 - Execute o Docker Compose:
 
 ```java
 docker-compose up
 ```
+
