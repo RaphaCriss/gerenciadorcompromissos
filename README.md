@@ -58,7 +58,6 @@ Descrição: Aniversário Raphaela
 Local: Salão de festas Além da Alegria
 ```
 
-
 ### 2. Listar Compromissos
 
 **Exemplo de entrada:**
@@ -199,66 +198,94 @@ A seguir, estão as instruções para rodar o projeto e o banco de dados MySQL u
 Crie um arquivo chamado `Dockerfile` na raiz do seu projeto com o seguinte conteúdo:
 
 ```java
-# Usando a imagem do OpenJDK 17 como base
-FROM openjdk:17-jre-slim
+# Etapa 1: Construção (build) da aplicação
+        FROM maven:3.9.6-eclipse-temurin-17 as builder
 
-# Defina o diretório de trabalho
-WORKDIR /app
+        WORKDIR /app
 
-# Copie o JAR gerado para dentro da imagem
-COPY target/gerenciador-compromissos.jar /app/gerenciador-compromissos.jar
+        # Copia todos os arquivos para o container e realiza o build
+        COPY . .
+        RUN mvn clean package -DskipTests
 
-# Exponha a porta da aplicação
-EXPOSE 8080
+        # Etapa 2: Imagem final com apenas o JAR
+        FROM eclipse-temurin:17-jre
 
-# Comando para rodar a aplicação
-ENTRYPOINT ["java", "-jar", "gerenciador-compromissos.jar"]
+        WORKDIR /app
+
+        # Copia apenas o JAR gerado da etapa anterior
+        COPY --from=builder /app/target/gerenciadorcompromissos-0.0.1-SNAPSHOT.jar app.jar
+
+        # Expõe a porta da aplicação
+        EXPOSE 8080
+
+        # Comando de inicialização da aplicação
+        ENTRYPOINT ["java", "-jar", "app.jar"]
+
 ```
+
+Explicação do Dockerfile:
+
+* FROM openjdk:17-jre-slim: Usa uma imagem base leve com Java 17 JRE para rodar a aplicação.
+
+* WORKDIR /app: Define o diretório padrão para comandos dentro do container.
+
+* COPY target/gerenciador-compromissos.jar /app/gerenciador-compromissos.jar: Copia o arquivo JAR gerado pela build Maven para o container.
+
+* EXPOSE 8080: Informa ao Docker que o container irá escutar a porta 8080.
+
+* ENTRYPOINT ["java", "-jar", "gerenciador-compromissos.jar"]: Define o comando padrão para iniciar a aplicação Java.
 
 ### 2. 📦 Documentação do Serviço MySQL no `docker-compose.yml`
 
-Para rodar a aplicação e o banco de dados MySQL de forma simples, você pode usar o Docker Compose. Crie um arquivo chamado `docker-compose.yml` na raiz do seu projeto com o seguinte conteúdo:
+Define dois serviços: app e mysql.
 
-O arquivo docker-compose.yml abaixo, define dois containers:
+* app: constrói a imagem Docker usando o Dockerfile na raiz (context: .).
 
-- app: O container que executará sua aplicação Spring Boot.
+* Mapeia a porta 8080 da aplicação para o host.
 
-- db: O container que executará o banco de dados MySQL.
+* Passa variáveis de ambiente para conectar ao banco MySQL pelo hostname mysql (nome do serviço).
+
+* mysql: utiliza a imagem oficial do MySQL 8.0, configurada via variáveis de ambiente.
+
+* Monta volume para configuração personalizada do MySQL (pode ser vazio ou conter .cnf).
+
+* Ambos os serviços estão na mesma rede app-network para comunicação interna.
 
 ```java
 version: '3.8'
 
-services:
-  app:
-    build: .
-    ports:
-      - "8080:8080"
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/gerenciador_compromissos
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root
-      - SPRING_JPA_HIBERNATE_DDL-AUTO=update
-    depends_on:
-      - db
-    networks:
-      - app-network
+        services:
+        app:
+        build:
+        context: ..
+        dockerfile: Dockerfile
+        ports:
+        - "8080:8080"  # Só a app é exposta para o host
+        depends_on:
+        - mysql
+        environment:
+        - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/db_example
+        - SPRING_DATASOURCE_USERNAME=springuser
+        - SPRING_DATASOURCE_PASSWORD=ThePassword
 
-  db:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: gerenciador_compromissos
-    ports:
-      - "3306:3306"
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
-
+        mysql:
+        image: mysql
+        expose:
+        - "3306"  # Visível apenas para os containers da mesma rede
+        environment:
+        - MYSQL_USER=springuser
+        - MYSQL_PASSWORD=ThePassword
+        - MYSQL_DATABASE=db_example
+        - MYSQL_ROOT_PASSWORD=root
+        volumes:
+        - "./conf.d:/etc/mysql/conf.d:ro"
 
 ```
+
+### 🔒 Segurança de Exposição
+A porta do banco de dados não é exposta para o host, garantindo que o MySQL só possa ser acessado pela aplicação dentro da mesma rede Docker.
+
+
 ###Descrição Geral
 Este serviço configura uma instância do MySQL utilizando a imagem oficial do Docker Hub. Ele define variáveis de ambiente, mapeamento de portas, e monta um volume com arquivos de configuração personalizados.
 
@@ -298,28 +325,29 @@ Monta um volume com arquivos de configuração personalizados do MySQL:
 ### ✅ Requisitos
 - Docker e Docker Compose instalados.
 
-- Diretório ./conf.d existente (pode estar vazio ou conter configurações .cnf válidas).
+- Docker Compose instalado
 
-- A porta 3306 disponível no host para não haver conflitos.
-
-- Define variáveis de ambiente necessárias para configurar o banco no momento da criação:
+- Projeto compilado (mvn clean install) gerando o JAR em target/
 
 ### 3. ▶️ Rodando o Docker
 Para rodar a aplicação e o MySQL usando Docker Compose, execute os seguintes comandos:
 
 1- Construa as imagens:
 ```java
-docker-compose build
+docker-compose up build
 ```
 
-2- Inicie os containers:
-```java
-docker-compose up
-```
+Este comando:
 
-Isso irá subir tanto a aplicação Spring Boot quanto o MySQL. O banco de dados MySQL estará acessível no container `db` e a aplicação Spring Boot estará disponível na porta `8080` da sua máquina local.
+* Constrói a imagem da aplicação usando o Dockerfile.
 
-## Como Rodar o Projeto
+* Inicia o banco de dados MySQL.
+
+* Inicia sua aplicação Spring Boot.
+
+* A aplicação estará disponível na porta http://localhost:8080.
+
+## Como Rodar o Projeto com Docker
 
 #### Pré-requisitos
 - Docker e Docker Compose instalados
@@ -355,9 +383,31 @@ telegram.bot.username=SEU_NOME_DE_USUARIO_AQUI
 mvn clean install
 ```
 
-#### 4 - Execute o Docker Compose:
+#### 4 - Construa as imagens e suba os containers:
 
+Na pasta docker, onde está localizado o arquivo docker-compose.yml), execute:
 ```java
-docker-compose up
+docker-compose up --build
 ```
 
+Esse comando vai:
+-Construir a imagem Docker da aplicação Spring Boot.
+
+-Baixar e iniciar o container do MySQL.
+
+-Subir ambos os containers na mesma rede Docker.
+
+#### 5 - Acesse a aplicação:
+
+Após os containers estarem rodando, sua aplicação estará disponível em:
+
+```aidl
+http://localhost:8080
+``` 
+#### 6- Testando a aplicação
+Você pode acessar os endpoints da API, por exemplo via navegador ou ferramentas como Postman, usando a URL acima.
+
+Acesse a documentação interativa em:
+```aidl
+http://localhost:8080/swagger-ui.html
+``` 
