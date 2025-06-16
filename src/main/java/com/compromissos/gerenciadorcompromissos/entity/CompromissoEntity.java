@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -22,7 +23,7 @@ public class CompromissoEntity {
     private UUID compromissoId;
 
     @Column(name = "data")
-    private String data;
+    private LocalDate data;
 
     @Column(name = "hora")
     private String hora;

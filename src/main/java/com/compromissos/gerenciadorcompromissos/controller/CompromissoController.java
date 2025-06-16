@@ -7,11 +7,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/v1/compromissos")
 public class CompromissoController {
 
-    private CompromissoService compromissoService;
+    private final CompromissoService compromissoService;
 
     public CompromissoController(CompromissoService compromissoService) {
         this.compromissoService = compromissoService;
@@ -20,42 +23,20 @@ public class CompromissoController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CompromissoEntity createCompromisso(@RequestBody CreateCompromissoDto createCompromissoDto) {
-        var compromissoSaved = compromissoService.createCompromisso(createCompromissoDto);
-        return compromissoSaved;
+        return compromissoService.createCompromisso(createCompromissoDto);
     }
 
     @GetMapping("/{compromissoId}")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<CompromissoEntity> getCompromissoById(@PathVariable("compromissoId") String compromissoId) {
-
+    public ResponseEntity<CompromissoEntity> getCompromissoById(@PathVariable("compromissoId") UUID compromissoId) {
         var compromisso = compromissoService.getCompromissoById(compromissoId);
-
-        if(compromisso.isPresent()){
-
-            return ResponseEntity.ok(compromisso.get());
-
-        } else {
-            throw new CompromissoNaoEncontradoException(compromissoId);
-        }
+        return compromisso.map(ResponseEntity::ok)
+                .orElseThrow(() -> new CompromissoNaoEncontradoException(compromissoId));
     }
 
     @GetMapping
-    public ResponseEntity<CompromissoEntity> getTodosCompromissos(@PathVariable("compromissoId") String compromissoId) {
-
-        //
-        return null;
-    }
-
-    @GetMapping("/dia/{data}")
-    public ResponseEntity<CompromissoEntity> getTodosCompromissosDia(@PathVariable("data") String data) {
-        //
-        return null;
-    }
-
-    @GetMapping("/mes/{data}")
-    public ResponseEntity<CompromissoEntity> getTodosCompromissosMes(@PathVariable("data") String data) {
-        //
-        return null;
+    public ResponseEntity<List<CompromissoEntity>> getAllCompromissos() {
+        List<CompromissoEntity> compromissos = compromissoService.getTodosCompromissos();
+        return ResponseEntity.ok(compromissos);
     }
 
 }
