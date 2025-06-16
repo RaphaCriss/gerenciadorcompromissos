@@ -1,5 +1,6 @@
 package com.compromissos.gerenciadorcompromissos.controller;
 
-public record CreateCompromissoDto(String data, String hora, String descricao, String local) {
+import java.time.LocalDate;
 
-}
+public record CreateCompromissoDto(LocalDate data, String hora, String descricao, String local) {}
+
