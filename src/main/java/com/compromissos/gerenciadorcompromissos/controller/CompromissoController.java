@@ -22,7 +22,7 @@ public class CompromissoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CompromissoEntity createCompromisso(@RequestBody CreateCompromissoDto createCompromissoDto) {
+    public CompromissoEntity createCompromisso(@RequestBody CompromissoDto createCompromissoDto) {
         return compromissoService.createCompromisso(createCompromissoDto);
     }
 
