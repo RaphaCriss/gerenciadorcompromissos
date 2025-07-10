@@ -23,19 +23,22 @@ public class CompromissoController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CompromissoEntity createCompromisso(@RequestBody CompromissoDto createCompromissoDto) {
-        return compromissoService.createCompromisso(createCompromissoDto);
+        return compromissoService.createCompromisso(createCompromissoDto, createCompromissoDto.idTelegram());
     }
 
-    @GetMapping("/{compromissoId}")
-    public ResponseEntity<CompromissoEntity> getCompromissoById(@PathVariable("compromissoId") UUID compromissoId) {
-        var compromisso = compromissoService.getCompromissoById(compromissoId);
-        return compromisso.map(ResponseEntity::ok)
-                .orElseThrow(() -> new CompromissoNaoEncontradoException(compromissoId));
+    @GetMapping("/{id}")
+    public ResponseEntity<CompromissoEntity> getCompromissoById(
+            @PathVariable UUID id,
+            @RequestParam("idTelegram") Long idTelegram
+    ) {
+        return compromissoService.getCompromissoById(id, idTelegram)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping
-    public ResponseEntity<List<CompromissoEntity>> getAllCompromissos() {
-        List<CompromissoEntity> compromissos = compromissoService.getTodosCompromissos();
+    public ResponseEntity<List<CompromissoEntity>> getAllCompromissos(@RequestParam("idTelegram") Long idTelegram) {
+        List<CompromissoEntity> compromissos = compromissoService.getTodosCompromissos(idTelegram);
         return ResponseEntity.ok(compromissos);
     }
 
