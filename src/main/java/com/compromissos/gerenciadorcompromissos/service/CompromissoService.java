@@ -7,7 +7,7 @@ import com.compromissos.gerenciadorcompromissos.repository.CompromissoRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,24 +25,22 @@ public class CompromissoService {
         this.compromissoRepository = compromissoRepository;
     }
 
-    public CompromissoEntity createCompromisso(CompromissoDto createCompromissoDto) {
+    public CompromissoEntity createCompromisso(CompromissoDto createCompromissoDto, Long idTelegram) {
         CompromissoEntity entity = compromissoMapper.toEntity(createCompromissoDto);
+        entity.setIdTelegram(idTelegram);
         return compromissoRepository.save(entity);
     }
 
-    public Optional<CompromissoEntity> getCompromissoById(UUID id) {
-        return compromissoRepository.findById(id);
+    public Optional<CompromissoEntity> getCompromissoById(UUID id, Long idTelegram) {
+        return compromissoRepository.findByCompromissoIdAndIdTelegram(id, idTelegram);
     }
 
-    public List<CompromissoEntity> getTodosCompromissos() {
-        return compromissoRepository.findAll();
+
+    public List<CompromissoEntity> getTodosCompromissos(Long idTelegram) {
+        return compromissoRepository.findByIdTelegram(idTelegram);
     }
 
-    public List<CompromissoEntity> getCompromissosPorDia(LocalDate data) {
-        return compromissoRepository.findByData(data);
-    }
-
-    public List<CompromissoEntity> getCompromissosPorMes(int mes, int ano) {
-        return compromissoRepository.findByMesEAno(mes, ano);
+    public List<CompromissoEntity> getCompromissosPorDia(LocalDateTime dataHora, Long idTelegram) {
+        return compromissoRepository.findByDataHoraAndIdTelegram(dataHora, idTelegram);
     }
 }
