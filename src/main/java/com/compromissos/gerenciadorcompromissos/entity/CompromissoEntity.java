@@ -6,7 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -22,17 +22,17 @@ public class CompromissoEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID compromissoId;
 
-    @Column(name = "data")
-    private LocalDate data;
-
-    @Column(name = "hora")
-    private String hora;
+    @Column(name = "data_hora")
+    private LocalDateTime dataHora;
 
     @Column(name = "descricao")
     private String descricao;
 
     @Column(name = "local")
     private String local;
+
+    @Column(name = "id_telegram", nullable = false)
+    private Long idTelegram;
 
     @CreationTimestamp
     private Instant creationTimestamp;
