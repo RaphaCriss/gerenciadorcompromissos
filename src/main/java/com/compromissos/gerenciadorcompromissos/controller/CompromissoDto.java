@@ -1,12 +1,12 @@
 package com.compromissos.gerenciadorcompromissos.controller;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record CompromissoDto(
-        LocalDate data,
-        String hora,
+        LocalDateTime dataHora,
         String descricao,
-        String local
+        String local,
+        Long idTelegram
 ) {
-    
+
 }
