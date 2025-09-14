@@ -15,8 +15,12 @@ WORKDIR /app
 # Copia apenas o JAR gerado da etapa anterior
 COPY --from=builder /app/target/gerenciadorcompromissos-0.0.1-SNAPSHOT.jar app.jar
 
+# Baixa o script wait-for-it.sh diretamente do GitHub
+RUN curl -o /wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh \
+    && chmod +x /wait-for-it.sh
+
 # Expõe a porta da aplicação
 EXPOSE 8080
 
-# Comando de inicialização da aplicação
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Comando de inicialização da aplicação que aguarda o banco estar disponível
+ENTRYPOINT ["/wait-for-it.sh", "db:3306", "--timeout=30", "--strict", "--", "java", "-jar", "app.jar"]
