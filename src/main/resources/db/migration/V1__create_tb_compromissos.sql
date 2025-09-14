@@ -1,0 +1,13 @@
+CREATE TABLE tb_compromisso (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    descricao TEXT,
+    data DATE NOT NULL,
+    hora TIME NOT NULL,
+    cep VARCHAR(9) NOT NULL,
+    cidade VARCHAR(100) NOT NULL,
+    estado VARCHAR(2) NOT NULL,
+    alerta_dias_antes INT NOT NULL CHECK (alerta_dias_antes >= 0),
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
