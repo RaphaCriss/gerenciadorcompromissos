@@ -33,24 +33,24 @@ A aplicação permite:
 ```bash
 src/
 ├── main/
-│    ├── java/
-│    │    └── com/empresa/compromissos/
-│    │          ├── controller/       # Gerencia as interações com o usuário via Telegram
-│    │          ├── service/          # Contém a lógica de negócios para adicionar, listar, modificar e deletar compromissos, além do envio de alertas e integração com API de previsão do tempo
-│    │          ├── repository/       # Responsável pela persistência dos dados no banco de dados MySQL
-│    │          ├── model/            # Contém a estrutura de dados dos compromissos (incluindo CEP, cidade e estado)
-│    │          └── config/           # Configurações gerais, como integração com Telegram Bot e API de clima
-│    └── resources/
-│          ├── application.properties # Configurações do Spring Boot e variáveis sensíveis
-│          ├── db/migration/          # Scripts Flyway para versionamento do banco de dados
-│          └── ...
+│   ├── java/
+│   │   └── com/empresa/compromissos/
+│   │       ├── config/              # Configuração de Telegram Bot, API de Clima, etc.
+│   │       ├── controller/          # REST e/ou Telegram Controller
+│   │       ├── dto/                 # Objetos de transferência de dados (input/output)
+│   │       ├── exception/           # Tratamento de exceções personalizadas
+│   │       ├── mapper/              # Conversores entre Entity <-> DTO
+│   │       ├── model/               # Entidades JPA (dados persistidos)
+│   │       ├── repository/          # Repositórios JPA
+│   │       ├── scheduler/           # Tarefas agendadas (envio de alertas)
+│   │       └── service/             # Regras de negócio
+│   └── resources/
+│       ├── application.properties   # Configurações da aplicação
+│       └── db/
+│           └── migration/           # Scripts Flyway
 └── test/
-└── java/...
+    └── java/                        # Testes automatizados
 ```
-
-
-
-
 
 ## Endpoints de Telegram
 
@@ -73,7 +73,6 @@ Como funciona:
 | /alterar + ID + novos dados                          | Atualiza um compromisso existente               |
 | /deletar + ID                                        | Remove um compromisso do sistema                |
 ```
-
 
 ## Funcionalidades
 
@@ -427,7 +426,6 @@ Crie um arquivo chamado `Dockerfile` na raiz do seu projeto com o seguinte conte
 
         # Comando de inicialização da aplicação
         ENTRYPOINT ["java", "-jar", "app.jar"]
-
 ```
 
 Explicação do Dockerfile:
@@ -486,7 +484,6 @@ version: '3.8'
         - MYSQL_ROOT_PASSWORD=root
         volumes:
         - "./conf.d:/etc/mysql/conf.d:ro"
-
 ```
 
 ### 🔒 Segurança de Exposição

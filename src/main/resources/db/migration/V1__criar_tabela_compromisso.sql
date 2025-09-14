@@ -1,4 +1,4 @@
-CREATE TABLE tb_compromisso (
+CREATE TABLE IF NOT EXISTS tb_compromisso (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(255) NOT NULL,
     descricao TEXT,
