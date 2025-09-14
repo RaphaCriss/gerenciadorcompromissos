@@ -2,179 +2,386 @@
 
 
 ## Descrição
-
-Este projeto tem como objetivo ajudar o usuário a gerenciar seus compromissos de forma automatizada. O usuário poderá interagir com o sistema através do **Telegram**, enviando mensagens com informações sobre compromissos (data, hora, descrição) e o sistema irá armazenar, listar, modificar ou deletar esses compromissos.
+Este projeto tem como objetivo ajudar o usuário a gerenciar seus compromissos de forma automatizada e integrada com informações meteorológicas. O usuário poderá interagir com o sistema através do Telegram, enviando mensagens contendo informações sobre compromissos, como data, hora, descrição e localização (CEP, cidade e estado). O sistema irá armazenar, listar, modificar ou deletar esses compromissos, além de enviar alertas personalizados com a previsão do tempo para o local e horário definidos.
 
 A aplicação permite:
-- Adicionar compromissos.
-- Listar compromissos por dia ou mês.
-- Modificar compromissos existentes.
-- Deletar compromissos.
+- Adicionar compromissos com CEP, cidade e estado;
+
+- Listar compromissos por dia, mês, cidade, estado ou CEP;
+
+- Modificar compromissos existentes;
+
+- Deletar compromissos;
+
+- Configurar alerta antecipado, definindo o número de dias antes do compromisso para receber notificações;
+
+- Enviar alertas via Telegram, incluindo informações do compromisso e previsão do tempo para a localidade e horário definidos.
 
 ## Tecnologias Utilizadas
 
 - **Java 17**
 - **Spring Boot 3.2**
-- **Telegram Bot API**
+- **Notificações Telegram Bot API**
 - **Banco de dados MySQL**
 - **JPA (Java Persistence API)**
+- **Gerenciamento de Migrations: Flyway**
+- **Integração de Previsão do Tempo: API de clima (exemplo: OpenWeatherMap)**
 - **Docker** (para containerização)
 
 ## Estrutura do Projeto
 
-- **Controller**: Gerencia as interações com o usuário via Telegram.
-- **Service**: Contém a lógica de negócios para adicionar, listar, modificar e deletar compromissos.
-- **Repository**: Responsável pela persistência dos dados no banco de dados.
-- **Model**: Contém a estrutura de dados dos compromissos.
+```bash
+src/
+├── main/
+│    ├── java/
+│    │    └── com/empresa/compromissos/
+│    │          ├── controller/       # Gerencia as interações com o usuário via Telegram
+│    │          ├── service/          # Contém a lógica de negócios para adicionar, listar, modificar e deletar compromissos, além do envio de alertas e integração com API de previsão do tempo
+│    │          ├── repository/       # Responsável pela persistência dos dados no banco de dados MySQL
+│    │          ├── model/            # Contém a estrutura de dados dos compromissos (incluindo CEP, cidade e estado)
+│    │          └── config/           # Configurações gerais, como integração com Telegram Bot e API de clima
+│    └── resources/
+│          ├── application.properties # Configurações do Spring Boot e variáveis sensíveis
+│          ├── db/migration/          # Scripts Flyway para versionamento do banco de dados
+│          └── ...
+└── test/
+└── java/...
+```
+
+
+
+
 
 ## Endpoints de Telegram
 
-O usuário interage com o bot enviando mensagens formatadas conforme demonstrado no tópico de funcionalidades.
+A interação do usuário com a aplicação ocorre exclusivamente via Telegram, por meio do bot configurado. O bot recebe mensagens formatadas com informações dos compromissos e responde conforme as ações solicitadas.
+
+Como funciona:
+
+- O usuário envia comandos e mensagens formatadas para o bot do Telegram.
+
+- O Controller interpreta essas mensagens e aciona os serviços correspondentes para cadastrar, listar, alterar ou deletar compromissos.
+
+- O bot responde com mensagens de confirmação, listas de compromissos, informações atualizadas e alertas programados.
+
+**Exemplos de comandos/mensagens suportadas:**
+```markdown
+| Comando / Mensagem                                   | Ação Executada                                  |
+|------------------------------------------------------|-------------------------------------------------|
+| /adicionar + detalhes do compromisso                 | Cadastra um novo compromisso                    |
+| /listar + filtros (data, mês, cidade, estado, cep)   | Lista compromissos conforme filtros fornecidos  |
+| /alterar + ID + novos dados                          | Atualiza um compromisso existente               |
+| /deletar + ID                                        | Remove um compromisso do sistema                |
+```
 
 
 ## Funcionalidades
 
 ### 1. Adicionar Compromisso
+Esta funcionalidade permite ao usuário cadastrar um novo compromisso, fornecendo informações detalhadas como data, hora, descrição e localização (CEP, cidade e estado). Também é possível configurar a antecedência para receber alertas via Telegram.
 
+**Como usar:**
 
-**Exemplo de entrada:**
+O usuário deve enviar uma mensagem para o bot Telegram com os detalhes do compromisso no formato esperado. Alternativamente, via API REST, o compromisso pode ser criado através do endpoint `/compromissos` enviando um JSON com as informações.
 
-```javascript
-Assunto: Adicionar compromisso
-Data: 30/06/2025
-Hora: 16:00
-Descrição: Aniversário Raphaela
-Local: Salão de festas Além da Alegria
+**Campos necessários:**
+```markdown
+| Campo          | Tipo    | Descrição                                           |
+|----------------|---------|-----------------------------------------------------|
+| titulo         | String  | Título ou nome do compromisso                       |
+| descricao      | String  | Descrição detalhada do compromisso (opcional)       |
+| data           | String  | Data do compromisso (formato: YYYY-MM-DD)           |
+| hora           | String  | Hora do compromisso (formato: HH:mm)                |
+| cep            | String  | CEP do local do compromisso (formato: NNNNN-NNN)    |
+| cidade         | String  | Cidade onde ocorrerá o compromisso                  |
+| estado         | String  | Estado (UF) da cidade                               |
+| alertaDiasAntes| Integer | Número de dias antes para receber o alerta          |
+```
+
+**Exemplo de mensagem via Telegram**
+```markefile
+/adicionar
+Título: Consulta médica
+Descrição: Consulta com cardiologista
+Data: 2025-10-01
+Hora: 14:00
+CEP: 01310-000
+Cidade: São Paulo
+Estado: SP
+AlertaDiasAntes: 3
+```
+**Exemplo de JSON para API REST**
+```json
+{
+  "titulo": "Consulta médica",
+  "descricao": "Consulta com cardiologista",
+  "data": "2025-10-01",
+  "hora": "14:00",
+  "cep": "01310-000",
+  "cidade": "São Paulo",
+  "estado": "SP",
+  "alertaDiasAntes": 3
+}
 ```
 
 **Resposta de sucesso:**
-
-```javascript
-Compromisso adicionado com sucesso! 
-ID: 12345 
-Data: 30/06/2025 
-Hora: 16:00
-Descrição: Aniversário Raphaela
-Local: Salão de festas Além da Alegria
+```json
+{
+  "id": 15,
+  "titulo": "Consulta médica",
+  "descricao": "Consulta com cardiologista",
+  "data": "2025-10-01",
+  "hora": "14:00",
+  "cep": "01310-000",
+  "cidade": "São Paulo",
+  "estado": "SP",
+  "alertaDiasAntes": 3,
+  "mensagem": "Compromisso cadastrado com sucesso!"
+}
 ```
 
 ### 2. Listar Compromissos
+Permite ao usuário consultar os compromissos cadastrados, filtrando por dia, mês, cidade, estado ou CEP.
 
-**Exemplo de entrada:**
-
-```javascript
-Assunto: Listar compromissos 
-Data: 30/06/2025
+**Parâmetros de filtro disponíveis:** 
+```markdown 
+| Parâmetro | Tipo   | Descrição                                            |
+|-----------|--------|------------------------------------------------------|
+| data      | String | Data para filtrar compromissos (formato: YYYY-MM-DD) |
+| mes       | String | Mês para filtrar compromissos (formato: YYYY-MM)     |
+| cidade    | String | Nome da cidade para filtrar                          |
+| estado    | String | UF (estado) para filtrar                             |
+| cep       | String | CEP para filtrar compromissos                        |
 ```
 
 **Resposta de sucesso:**
 
-```javascript
-Compromissos no dia 30/06/2025: 
-ID: 12345 
-Hora: 16:00
-Descrição: Aniversário Raphaela
-Local: Salão de festas Além da Alegria
-
-ID: 67892 
-Hora: 10:00
-Descrição: Manutenção unhas de gel
-Local: Salão CasemiroNails
+```json
+[
+  {
+    "id": 15,
+    "titulo": "Consulta médica",
+    "descricao": "Consulta com cardiologista",
+    "data": "2025-10-01",
+    "hora": "14:00",
+    "cep": "01310-000",
+    "cidade": "São Paulo",
+    "estado": "SP",
+    "alertaDiasAntes": 3
+  },
+  {
+    "id": 18,
+    "titulo": "Reunião com equipe",
+    "descricao": "Discussão do projeto",
+    "data": "2025-10-01",
+    "hora": "16:00",
+    "cep": "01310-000",
+    "cidade": "São Paulo",
+    "estado": "SP",
+    "alertaDiasAntes": 1
+  }
+]
 ```
-
 
 ### 3. Modificar Compromisso
+Permite ao usuário alterar os dados de um compromisso existente, identificado pelo seu ID.
+
+**Campos permitidos para atualização:**
+```markdown 
+| Campo          | Tipo    | Descrição                                            |
+|----------------|---------|------------------------------------------------------|
+| titulo         | String  | Novo título ou nome do compromisso                   |
+| descricao      | String  | Nova descrição detalhada do compromisso              |
+| data           | String  | Nova data do compromisso (formato: YYYY-MM-DD)       |
+| hora           | String  | Nova hora do compromisso (formato: HH:mm)            |
+| cep            | String  | Novo CEP do local do compromisso                     |
+| cidade         | String  | Nova cidade onde ocorrerá o compromisso              |
+| estado         | String  | Novo estado (UF) da cidade                           |
+| alertaDiasAntes| Integer | Novo número de dias antes para receber o alerta      |
+```
+A requisição será enviada via HTTP PUT para o endpoint, por exemplo:
+```bash
+PUT /compromissos/{id}
+```
 
 **Exemplo de entrada:**
 
-```javascript
-Assunto: Modificar compromisso 
-ID: 67892  
-Hora: 08:00
+```json
+{
+  "titulo": "Consulta cardiológica atualizada",
+  "descricao": "Consulta revisada com o cardiologista",
+  "data": "2025-10-02",
+  "hora": "15:30",
+  "cep": "01310-001",
+  "cidade": "São Paulo",
+  "estado": "SP",
+  "alertaDiasAntes": 2
+}
 ```
 
 **Resposta de sucesso:**
-
-```javascript
-Compromisso modificado com sucesso! 
-ID: 67892 
-Hora: 08:00
-Descrição: Manutenção unhas de gel
-Local: Salão CasemiroNails
+```json
+{
+  "id": 15,
+  "titulo": "Consulta cardiológica atualizada",
+  "descricao": "Consulta com cardiologista",
+  "data": "2025-10-01",
+  "hora": "15:00",
+  "cep": "01310-000",
+  "cidade": "São Paulo",
+  "estado": "SP",
+  "alertaDiasAntes": 2,
+  "mensagem": "Compromisso atualizado com sucesso!"
+}
 ```
-
 
 ### 4. Deletar Compromisso
 
-**Exemplo de entrada:**
+Permite ao usuário excluir um compromisso pelo seu ID.
 
-```javascript
-Assunto: Deletar compromisso 
-ID: 67892  
+**Campo necessário:**
+```markdown 
+| Campo          | Tipo    | Descrição                    |
+|----------------|---------|------------------------------|
+| id             | Long    | Identificador do compromisso |
 ```
-**Resposta de sucesso:**
 
-```javascript
-Compromisso deletado com sucesso! 
-ID: 67892
+A requisição será enviada via HTTP DELETE para o endpoint, por exemplo:
+```bash
+DELETE /compromissos{id}
+```
+
+**Resposta de sucesso:**
+```json
+{
+  "id": 15,
+  "mensagem": "Compromisso removido com sucesso!"
+}
 ```
 
 ## Modelagem de Dados
+```pgsql
++---------------------------------------------------+
+|                   Compromisso                     |
++----------------+----------------------------------+
+| id             | BIGINT (PK)                      |
+| titulo         | VARCHAR(255)                     |
+| descricao      | TEXT                             |
+| data           | DATE                             |
+| hora           | TIME                             |
+| cep            | VARCHAR(9)                       |
+| cidade         | VARCHAR(100)                     |
+| estado         | VARCHAR(2)                       |
+| alertaDiasAntes| INT                              |
+| criadoEm       | TIMESTAMP                        |
+| atualizadoEm   | TIMESTAMP                        |
++---------------------------------------------------+
+```
 
-### Entidade `Compromisso`
+**Considerações:**
+
+- A tabela Compromisso armazena todas as informações necessárias para o gerenciamento dos compromissos.
+
+- A aplicação pode utilizar índices nos campos data, cidade, estado e cep para otimizar consultas.
+
+- O campo alertaDiasAntes será usado para calcular quando o alerta deve ser disparado via Telegram.
+
+- A data e hora de criação e atualização ajudam no controle de auditoria e sincronização.
+
+### Entidade `CompromissoEntity`
 Esta entidade representa um compromisso que o usuário irá gerenciar (adicionar, listar, modificar, deletar).
 
+**Entidade CompromissoEntity:**
 ```java
-@Entity
-public class CompromissoEntity {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column(nullable = false)
-    private Strig data;
-    
-    @Column(nullable = false)
-    private LocalTime hora;
-    
-    @Column(nullable = false)
-    private String descricao;
+    @Entity
+    @Table(name = "tb_compromisso")
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public class CompromissoEntity {
 
-    @Column(nullable = false)
-    private String local;
-    
-    //@Column(nullable = false, unique = true)
-    //private String idTelegram;
-    
-    // Getters e Setters
-}
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
+        @Column(nullable = false)
+        private String titulo;
+
+        @Column(columnDefinition = "TEXT")
+        private String descricao;
+
+        @Column(nullable = false)
+        private LocalDate data;
+
+        @Column(nullable = false)
+        private LocalTime hora;
+
+        @Column(length = 9, nullable = false)
+        private String cep;
+
+        @Column(length = 100, nullable = false)
+        private String cidade;
+
+        @Column(length = 2, nullable = false)
+        private String estado;
+
+        @Column(name = "alerta_dias_antes", nullable = false)
+        private Integer alertaDiasAntes;
+
+        @Column(name = "criado_em", updatable = false)
+        private LocalDateTime criadoEm;
+
+        @Column(name = "atualizado_em")
+        private LocalDateTime atualizadoEm;
+
+        @PrePersist
+        public void prePersist() {
+            this.criadoEm = LocalDateTime.now();
+            this.atualizadoEm = LocalDateTime.now();
+        }
+
+        @PreUpdate
+        public void preUpdate() {
+            this.atualizadoEm = LocalDateTime.now();
+        }
+    }
 ```
 ### Atributos do Compromisso
 
-- id: Identificador único do compromisso no banco de dados.
+```markdown
+| Atributo          | Tipo           | Descrição                                                                |
+|-------------------|----------------|--------------------------------------------------------------------------|
+| `id`              | Long           | Identificador único do compromisso. Gerado automaticamente pelo sistema. |
+| `titulo`          | String         | Título curto ou nome do compromisso.                                     |
+| `descricao`       | String (Texto) | Descrição detalhada do compromisso (opcional).                           |
+| `data`            | LocalDate      | Data em que o compromisso irá ocorrer (formato: `YYYY-MM-DD`).           |
+| `hora`            | LocalTime      | Horário do compromisso (formato: `HH:mm`).                               |
+| `cep`             | String         | Código de Endereçamento Postal (CEP) do local do compromisso.            |
+| `cidade`          | String         | Cidade onde ocorrerá o compromisso.                                      |
+| `estado`          | String         | Estado (UF) correspondente à cidade do compromisso.                      |
+| `alertaDiasAntes` | Integer        | Número de dias de antecedência para envio de alerta.                     |
+| `criadoEm`        | LocalDateTime  | Data e hora de criação do compromisso. Gerado automaticamente.           |
+| `atualizadoEm`    | LocalDateTime  | Data e hora da última atualização. Atualizado automaticamente.           |
+```
 
-- data: A data em que o compromisso ocorrerá.
+**Script SQL para criação da tabela:**
 
-- hora: O horário do compromisso.
-
-- descricao: Descrição do compromisso (ex.: "Aniversário Raphaela").
-
-- local: Descrição do local do compromisso (ex.: Salão de festas Além da Alegria)
-
-- idTelegram: Identificador único gerado para o compromisso para integração com o Telegram.
-
-```sql
-CREATE TABLE compromisso (
+````SQL
+CREATE TABLE tb_compromisso (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    descricao TEXT,
     data DATE NOT NULL,
     hora TIME NOT NULL,
-    descricao VARCHAR(255) NOT NULL,
-    local VARCHAR(255) NOT NULL,
-    idTelegram VARCHAR(255) NOT NULL UNIQUE
+    cep VARCHAR(9) NOT NULL,
+    cidade VARCHAR(100) NOT NULL,
+    estado VARCHAR(2) NOT NULL,
+    alerta_dias_antes INT NOT NULL CHECK (alerta_dias_antes >= 0),
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-```
+````
 
 ## Configuração do Banco de Dados MySQL
 Para conectar ao banco de dados MySQL, ajuste as configurações no arquivo application.properties:
