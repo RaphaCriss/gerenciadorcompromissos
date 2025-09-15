@@ -386,13 +386,10 @@ CREATE TABLE tb_compromisso (
 Para conectar ao banco de dados MySQL, ajuste as configurações no arquivo application.properties:
 
 ```java
-spring.datasource.url=jdbc:mysql://localhost:3306/nome_do_banco
-spring.datasource.username=usuario
-spring.datasource.password=senha
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+spring.datasource.url=jdbc:mysql://db:3306/gerenciador_compromissos?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+        spring.datasource.username=root
+        spring.datasource.password=root
+        spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 ```
 - Substitua nome_do_banco, usuario e senha pelas credenciais do seu banco MySQL.
 
@@ -400,7 +397,7 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 
 A seguir, estão as instruções para rodar o projeto e o banco de dados MySQL utilizando Docker.
 
-### 1. Criando o `Dockerfile` para o Spring Boot
+### 1. 📦 Criando o `Dockerfile` para o Spring Boot
 Crie um arquivo chamado `Dockerfile` na raiz do seu projeto com o seguinte conteúdo:
 
 ```java
@@ -421,11 +418,15 @@ Crie um arquivo chamado `Dockerfile` na raiz do seu projeto com o seguinte conte
         # Copia apenas o JAR gerado da etapa anterior
         COPY --from=builder /app/target/gerenciadorcompromissos-0.0.1-SNAPSHOT.jar app.jar
 
+        # Baixa o script wait-for-it.sh diretamente do GitHub
+        RUN curl -o /wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh \
+        && chmod +x /wait-for-it.sh
+
         # Expõe a porta da aplicação
         EXPOSE 8080
 
-        # Comando de inicialização da aplicação
-        ENTRYPOINT ["java", "-jar", "app.jar"]
+        # Comando de inicialização da aplicação que aguarda o banco estar disponível
+        ENTRYPOINT ["/wait-for-it.sh", "db:3306", "--timeout=30", "--strict", "--", "java", "-jar", "app.jar"]
 ```
 
 Explicação do Dockerfile:
@@ -467,33 +468,45 @@ version: '3.8'
         ports:
         - "8080:8080"  # Só a app é exposta para o host
         depends_on:
-        - mysql
+        - db
         environment:
-        - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/db_example
-        - SPRING_DATASOURCE_USERNAME=springuser
-        - SPRING_DATASOURCE_PASSWORD=ThePassword
+        - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/gerenciador_compromissos?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+        - SPRING_DATASOURCE_USERNAME=root
+        - SPRING_DATASOURCE_PASSWORD=root
+        networks:
+        - app-network
 
-        mysql:
-        image: mysql
+        db:
+        image: mysql:8.0
+        container_name: db
         expose:
         - "3306"  # Visível apenas para os containers da mesma rede
         environment:
-        - MYSQL_USER=springuser
-        - MYSQL_PASSWORD=ThePassword
-        - MYSQL_DATABASE=db_example
         - MYSQL_ROOT_PASSWORD=root
+        - MYSQL_DATABASE=gerenciador_compromissos
+        - MYSQL_PASSWORD=root
         volumes:
-        - "./conf.d:/etc/mysql/conf.d:ro"
+        - mysql-data:/var/lib/mysql
+        - ./conf.d:/etc/mysql/conf.d:ro
+        networks:
+        - app-network
+
+        networks:
+        app-network:
+        driver: bridge
+
+        volumes:
+        mysql-data:
 ```
 
 ### 🔒 Segurança de Exposição
 A porta do banco de dados não é exposta para o host, garantindo que o MySQL só possa ser acessado pela aplicação dentro da mesma rede Docker.
 
 
-###Descrição Geral
+### Descrição Geral
 Este serviço configura uma instância do MySQL utilizando a imagem oficial do Docker Hub. Ele define variáveis de ambiente, mapeamento de portas, e monta um volume com arquivos de configuração personalizados.
 
-### ⚙️ Parâmetros do Serviço
+### ⚙ Parâmetros do Serviço
 `image: mysql`
 Utiliza a imagem oficial do MySQL. A versão padrão será a mais recente, a menos que especificado (ex: `mysql:8.0`).
 
@@ -560,7 +573,7 @@ Este comando:
 
 - Maven instalado
 
-#### Passos para executar:
+### Passos para executar:
 
 #### 1- Clone o repositório:
 
