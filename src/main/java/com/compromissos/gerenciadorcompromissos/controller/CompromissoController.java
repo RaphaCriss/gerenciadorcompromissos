@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/compromissos")
+@RequestMapping("/v1/compromissos")
 @RequiredArgsConstructor
 public class CompromissoController {
 
