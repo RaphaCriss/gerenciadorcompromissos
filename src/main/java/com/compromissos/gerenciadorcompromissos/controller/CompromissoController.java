@@ -22,21 +22,21 @@ public class CompromissoController {
 
     private final CompromissoService service;
 
-    // ✅ Criar compromisso
+    // Criar compromisso
     @PostMapping
     public ResponseEntity<CompromissoResponseDto> criar(@Valid @RequestBody CompromissoDto dto) {
         var response = service.criar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // ✅ Buscar por ID
+    // Buscar por ID
     @GetMapping("/{id}")
     public ResponseEntity<CompromissoResponseDto> buscarPorId(@PathVariable UUID id) {
         var response = service.buscarPorId(id);
         return ResponseEntity.ok(response);
     }
 
-    // ✅ Atualizar compromisso
+    // Atualizar compromisso
     @PutMapping("/{id}")
     public ResponseEntity<CompromissoResponseDto> atualizar(
             @PathVariable UUID id,
@@ -46,14 +46,14 @@ public class CompromissoController {
         return ResponseEntity.ok(response);
     }
 
-    // ✅ Deletar compromisso
+    // Deletar compromisso
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable UUID id) {
         service.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
-    // ✅ Listar por data (yyyy-MM-dd)
+    // Listar por data (yyyy-MM-dd)
     @GetMapping("/data")
     public ResponseEntity<List<CompromissoResponseDto>> listarPorData(
             @RequestParam("data") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
@@ -62,7 +62,7 @@ public class CompromissoController {
         return ResponseEntity.ok(lista);
     }
 
-    // ✅ Listar por mês e ano
+    // Listar por mês e ano
     @GetMapping("/mes-ano")
     public ResponseEntity<List<CompromissoResponseDto>> listarPorMesAno(
             @RequestParam int mes,
@@ -72,7 +72,7 @@ public class CompromissoController {
         return ResponseEntity.ok(lista);
     }
 
-    // ✅ Listar por cidade
+    // Listar por cidade
     @GetMapping("/cidade")
     public ResponseEntity<List<CompromissoResponseDto>> listarPorCidade(
             @RequestParam String cidade
@@ -81,7 +81,7 @@ public class CompromissoController {
         return ResponseEntity.ok(lista);
     }
 
-    // ✅ Listar por estado
+    // Listar por estado
     @GetMapping("/estado")
     public ResponseEntity<List<CompromissoResponseDto>> listarPorEstado(
             @RequestParam String estado
@@ -90,7 +90,7 @@ public class CompromissoController {
         return ResponseEntity.ok(lista);
     }
 
-    // ✅ Listar por CEP
+    // Listar por CEP
     @GetMapping("/cep")
     public ResponseEntity<List<CompromissoResponseDto>> listarPorCep(
             @RequestParam String cep
@@ -99,7 +99,7 @@ public class CompromissoController {
         return ResponseEntity.ok(lista);
     }
 
-    // ✅ Listar por idTelegram
+    // Listar por idTelegram
     @GetMapping("/telegram")
     public ResponseEntity<List<CompromissoResponseDto>> listarPorTelegram(
             @RequestParam Long idTelegram
