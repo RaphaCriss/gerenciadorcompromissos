@@ -3,6 +3,7 @@ package com.compromissos.gerenciadorcompromissos.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
@@ -19,8 +20,8 @@ import java.util.UUID;
 public class CompromissoEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID compromissoId;
+    @Column(name = "compromisso_id", length = 36)
+    private String compromissoId;
 
     @Column(nullable = false)
     private String titulo;
@@ -51,6 +52,9 @@ public class CompromissoEntity {
 
     @PrePersist
     public void prePersist() {
+        if (this.compromissoId == null) {
+            this.compromissoId = UUID.randomUUID().toString();
+        }
         this.criadoEm = LocalDateTime.now();
         this.atualizadoEm = LocalDateTime.now();
     }
