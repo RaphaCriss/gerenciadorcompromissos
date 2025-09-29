@@ -4,7 +4,6 @@ import com.compromissos.gerenciadorcompromissos.dto.CompromissoDto;
 import com.compromissos.gerenciadorcompromissos.dto.CompromissoResponseDto;
 import com.compromissos.gerenciadorcompromissos.dto.CompromissoUpdateDto;
 import com.compromissos.gerenciadorcompromissos.entity.CompromissoEntity;
-import com.compromissos.gerenciadorcompromissos.exception.RecursoNaoEncontradoException;
 import com.compromissos.gerenciadorcompromissos.mapper.CompromissoMapper;
 import com.compromissos.gerenciadorcompromissos.repository.CompromissoRepository;
 import com.compromissos.gerenciadorcompromissos.utils.exceptions.CompromissoNaoEncontradoException;
