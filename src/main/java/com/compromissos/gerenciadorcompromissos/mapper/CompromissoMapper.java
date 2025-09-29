@@ -19,6 +19,6 @@ public interface CompromissoMapper {
     CompromissoResponseDto toResponseDto(CompromissoEntity entity);
 
     // Atualização parcial: MapStruct permite isso com @BeanMapping e ignoreByDefault
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE) //"Se algum campo no DTO for null, não sobrescreva o valor atual da entidade com null."
     void updateFromDto(CompromissoUpdateDto dto, @MappingTarget CompromissoEntity entity);
 }
