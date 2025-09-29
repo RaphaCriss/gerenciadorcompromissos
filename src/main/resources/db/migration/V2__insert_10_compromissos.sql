@@ -1,13 +1,25 @@
-INSERT INTO tb_compromisso
-    (titulo, descricao, data, hora, cep, cidade, estado, alerta_dias_antes, criado_em, atualizado_em)
+INSERT INTO tb_compromissos (
+    compromisso_id,
+    titulo,
+    descricao,
+    data_hora,
+    cep,
+    cidade,
+    estado,
+    alerta_dias_antes,
+    id_telegram,
+    criado_em,
+    atualizado_em,
+    creation_timestamp
+)
 VALUES
-    ('Consulta médica', 'Consulta com o Dr. Silva', '2025-10-01', '09:00:00', '12345-678', 'São Paulo', 'SP', 2, NOW(), NOW()),
-    ('Reunião de trabalho', 'Discussão do projeto X', '2025-10-02', '14:30:00', '23456-789', 'Rio de Janeiro', 'RJ', 1, NOW(), NOW()),
-    ('Aniversário da Ana', 'Comprar presente', '2025-10-05', '00:00:00', '34567-890', 'Belo Horizonte', 'MG', 3, NOW(), NOW()),
-    ('Entrega do relatório', 'Relatório trimestral', '2025-10-07', '17:00:00', '45678-901', 'Curitiba', 'PR', 1, NOW(), NOW()),
-    ('Dentista', 'Limpeza dental', '2025-10-10', '10:00:00', '56789-012', 'Porto Alegre', 'RS', 2, NOW(), NOW()),
-    ('Treinamento', 'Curso de capacitação', '2025-10-12', '08:00:00', '67890-123', 'Fortaleza', 'CE', 5, NOW(), NOW()),
-    ('Consulta veterinária', 'Vacinação do gato', '2025-10-15', '15:30:00', '78901-234', 'Salvador', 'BA', 1, NOW(), NOW()),
-    ('Jantar com clientes', 'Restaurante italiano', '2025-10-18', '20:00:00', '89012-345', 'Brasília', 'DF', 2, NOW(), NOW()),
-    ('Manutenção do carro', 'Troca de óleo', '2025-10-20', '09:30:00', '90123-456', 'Manaus', 'AM', 3, NOW(), NOW()),
-    ('Encontro de amigos', 'Café no shopping', '2025-10-22', '16:00:00', '01234-567', 'Recife', 'PE', 4, NOW(), NOW());
+(UUID(), 'Viagem de Férias', 'Viagem para visitar parentes em Florianópolis', '2025-12-20 06:00:00', '88000-000', 'Florianópolis', 'SC', 10, 2001, NOW(), NOW(), NOW()),
+(UUID(), 'Consulta médica', 'Consulta com clínico geral',                     '2025-10-05 09:00:00', '12345-678', 'São Paulo',      'SP', 3, 2001, NOW(), NOW(), NOW()),
+(UUID(), 'Piquenique em família', 'Encontro com os primos no parque central', '2025-10-12 15:00:00', '23456-789', 'Campinas',       'SP', 1, 2001, NOW(), NOW(), NOW()),
+(UUID(), 'Revisão oftalmológica', 'Check-up anual com oftalmologista',        '2025-10-20 08:30:00', '34567-890', 'Curitiba',        'PR', 2, 2001, NOW(), NOW(), NOW()),
+(UUID(), 'Aniversário da mãe', 'Almoço em comemoração ao aniversário da mãe', '2025-10-30 12:00:00', '45678-901', 'Porto Alegre',    'RS', 5, 2001, NOW(), NOW(), NOW()),
+(UUID(), 'Dentista', 'Limpeza e avaliação',                                   '2025-11-02 11:00:00', '56789-012', 'Belo Horizonte',  'MG', 2, 2001, NOW(), NOW(), NOW()),
+(UUID(), 'Caminhada na orla', 'Atividade física leve no fim de semana',       '2025-10-06 07:30:00', '67890-123', 'Recife',          'PE', 0, 2001, NOW(), NOW(), NOW()),
+(UUID(), 'Curso de culinária', 'Aula especial de massas italianas',           '2025-11-10 19:00:00', '78901-234', 'Salvador',        'BA', 3, 2001, NOW(), NOW(), NOW()),
+(UUID(), 'Viagem para evento cultural', 'Festival de música em outra cidade', '2025-12-01 18:00:00', '89012-345', 'Fortaleza',       'CE', 7, 2001, NOW(), NOW(), NOW()),
+(UUID(), 'Dia de lazer', 'Passeio no shopping com amigos',                    '2025-10-19 16:00:00', '90123-456', 'Brasília',        'DF', 1, 2001, NOW(), NOW(), NOW());

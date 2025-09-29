@@ -1,13 +1,14 @@
-CREATE TABLE IF NOT EXISTS tb_compromisso (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS tb_compromissos (
+    compromisso_id CHAR(36) PRIMARY KEY,
     titulo VARCHAR(255) NOT NULL,
     descricao TEXT,
-    data DATE NOT NULL,
-    hora TIME NOT NULL,
+    data_hora DATETIME NOT NULL,
     cep VARCHAR(9) NOT NULL,
     cidade VARCHAR(100) NOT NULL,
     estado VARCHAR(2) NOT NULL,
     alerta_dias_antes INT NOT NULL CHECK (alerta_dias_antes >= 0),
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    id_telegram BIGINT NOT NULL,
+    criado_em DATETIME,
+    atualizado_em DATETIME,
+    creation_timestamp DATETIME
 );
