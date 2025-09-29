@@ -1,45 +1,110 @@
 package com.compromissos.gerenciadorcompromissos.controller;
 
-import com.compromissos.gerenciadorcompromissos.entity.CompromissoEntity;
+import com.compromissos.gerenciadorcompromissos.dto.CompromissoDto;
+import com.compromissos.gerenciadorcompromissos.dto.CompromissoResponseDto;
+import com.compromissos.gerenciadorcompromissos.dto.CompromissoUpdateDto;
 import com.compromissos.gerenciadorcompromissos.service.CompromissoService;
-import com.compromissos.gerenciadorcompromissos.utils.exceptions.CompromissoNaoEncontradoException;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/v1/compromissos")
+@RequestMapping("/api/compromissos")
+@RequiredArgsConstructor
 public class CompromissoController {
 
-    private final CompromissoService compromissoService;
+    private final CompromissoService service;
 
-    public CompromissoController(CompromissoService compromissoService) {
-        this.compromissoService = compromissoService;
-    }
-
+    // ✅ Criar compromisso
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public CompromissoEntity createCompromisso(@RequestBody CompromissoDto createCompromissoDto) {
-        return compromissoService.createCompromisso(createCompromissoDto, createCompromissoDto.idTelegram());
+    public ResponseEntity<CompromissoResponseDto> criar(@Valid @RequestBody CompromissoDto dto) {
+        var response = service.criar(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    // ✅ Buscar por ID
     @GetMapping("/{id}")
-    public ResponseEntity<CompromissoEntity> getCompromissoById(
+    public ResponseEntity<CompromissoResponseDto> buscarPorId(@PathVariable UUID id) {
+        var response = service.buscarPorId(id);
+        return ResponseEntity.ok(response);
+    }
+
+    // ✅ Atualizar compromisso
+    @PutMapping("/{id}")
+    public ResponseEntity<CompromissoResponseDto> atualizar(
             @PathVariable UUID id,
-            @RequestParam("idTelegram") Long idTelegram
+            @Valid @RequestBody CompromissoUpdateDto dto
     ) {
-        return compromissoService.getCompromissoById(id, idTelegram)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        var response = service.atualizar(id, dto);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping
-    public ResponseEntity<List<CompromissoEntity>> getAllCompromissos(@RequestParam("idTelegram") Long idTelegram) {
-        List<CompromissoEntity> compromissos = compromissoService.getTodosCompromissos(idTelegram);
-        return ResponseEntity.ok(compromissos);
+    // ✅ Deletar compromisso
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable UUID id) {
+        service.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 
+    // ✅ Listar por data (yyyy-MM-dd)
+    @GetMapping("/data")
+    public ResponseEntity<List<CompromissoResponseDto>> listarPorData(
+            @RequestParam("data") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
+    ) {
+        var lista = service.listarPorData(data);
+        return ResponseEntity.ok(lista);
+    }
+
+    // ✅ Listar por mês e ano
+    @GetMapping("/mes-ano")
+    public ResponseEntity<List<CompromissoResponseDto>> listarPorMesAno(
+            @RequestParam int mes,
+            @RequestParam int ano
+    ) {
+        var lista = service.listarPorMesAno(mes, ano);
+        return ResponseEntity.ok(lista);
+    }
+
+    // ✅ Listar por cidade
+    @GetMapping("/cidade")
+    public ResponseEntity<List<CompromissoResponseDto>> listarPorCidade(
+            @RequestParam String cidade
+    ) {
+        var lista = service.listarPorCidade(cidade);
+        return ResponseEntity.ok(lista);
+    }
+
+    // ✅ Listar por estado
+    @GetMapping("/estado")
+    public ResponseEntity<List<CompromissoResponseDto>> listarPorEstado(
+            @RequestParam String estado
+    ) {
+        var lista = service.listarPorEstado(estado);
+        return ResponseEntity.ok(lista);
+    }
+
+    // ✅ Listar por CEP
+    @GetMapping("/cep")
+    public ResponseEntity<List<CompromissoResponseDto>> listarPorCep(
+            @RequestParam String cep
+    ) {
+        var lista = service.listarPorCep(cep);
+        return ResponseEntity.ok(lista);
+    }
+
+    // ✅ Listar por idTelegram
+    @GetMapping("/telegram")
+    public ResponseEntity<List<CompromissoResponseDto>> listarPorTelegram(
+            @RequestParam Long idTelegram
+    ) {
+        var lista = service.listarPorTelegram(idTelegram);
+        return ResponseEntity.ok(lista);
+    }
 }
