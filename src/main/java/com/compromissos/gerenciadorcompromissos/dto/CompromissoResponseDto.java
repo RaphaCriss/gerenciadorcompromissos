@@ -3,7 +3,7 @@ package com.compromissos.gerenciadorcompromissos.dto;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record CompromissoResponseDto(
+public record CompromissoResponseDto( //Resposta
         UUID compromissoId,
         String titulo,
         String descricao,
