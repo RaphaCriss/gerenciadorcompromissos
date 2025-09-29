@@ -628,3 +628,36 @@ Acesse a documentação interativa em:
 ```aidl
 http://localhost:8080/swagger-ui.html
 ``` 
+#### 7- Acesso ao MySQL pelo Terminal
+
+
+Para acessar o banco de dados MySQL utilizado no projeto diretamente pelo terminal, siga os passos abaixo:
+
+1. **Acesse o container do MySQL:**
+
+Se estiver utilizando Docker, execute o comando para entrar no container MySQL:
+
+```bash
+docker exec -it db mysql -u root -p
+```
+
+2. **Informe a senha do usuário root:**
+
+Quando solicitado, digite a senha configurada (exemplo: root).
+
+3. **Acesse o banco de dados específico:**
+
+```bash
+docker exec -it db mysql -u root -p
+# (Digite a senha root quando solicitado)
+mysql> USE gerenciador_compromissos;
+mysql> SHOW TABLES;
+mysql> SELECT * FROM tb_compromissos;
+```
+
+##### Dica: Caso esteja acessando o MySQL instalado localmente sem Docker, use o comando: ***
+```bash
+mysql -u root -p -h localhost -P 3306
+```
+
+
