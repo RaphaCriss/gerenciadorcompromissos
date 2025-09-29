@@ -551,7 +551,7 @@ Para rodar a aplicação e o MySQL usando Docker Compose, execute os seguintes c
 
 1- Construa as imagens:
 ```java
-docker-compose up build
+docker-compose up --build
 ```
 
 Este comando:
