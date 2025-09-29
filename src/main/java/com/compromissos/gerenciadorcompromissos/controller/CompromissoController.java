@@ -29,6 +29,14 @@ public class CompromissoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    // Listar todos os compromissos
+    @GetMapping
+    public ResponseEntity<List<CompromissoResponseDto>> listarTodos() {
+        var lista = service.listarTodos();
+        return ResponseEntity.ok(lista);
+    }
+
+
     // Buscar por ID
     @GetMapping("/{id}")
     public ResponseEntity<CompromissoResponseDto> buscarPorId(@PathVariable UUID id) {

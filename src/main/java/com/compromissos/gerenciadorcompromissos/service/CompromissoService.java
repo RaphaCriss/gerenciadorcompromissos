@@ -29,6 +29,13 @@ public class CompromissoService {
         return mapper.toResponseDto(salvo);
     }
 
+    public List<CompromissoResponseDto> listarTodos() {
+        List<CompromissoEntity> entities = repository.findAll();
+        return entities.stream()
+                .map(mapper::toResponseDto)
+                .toList();
+    }
+
     //  Buscar por ID
     public CompromissoResponseDto buscarPorId(UUID id) {
         CompromissoEntity entity = repository.findById(id)
